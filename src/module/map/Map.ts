@@ -37,7 +37,7 @@ class Map {
       v1.map((v2, i2) => {
         // 空数据没有插入的必要
         if (v2 === '') return
-        // 将背景和敌人分离
+        // 将背景和敌人数据分离
         if (Store.backMnum.includes((<Map_back>v2))){
           // 背景 ---------
           this.renderMapData.push({
@@ -72,6 +72,18 @@ class Map {
   'draw-q'(rd: RenderMapData) {
     const { ctx } = Store;
     Store.basicsDraw(function () {
+      ctx.fillRect(rd.x, rd.y, config.basicHeight, config.basicWidth)
+    })
+  }
+
+  /**
+   * 绘制道路
+   * @param rd
+   */
+  'draw-lu'(rd: RenderMapData) {
+    const { ctx } = Store;
+    Store.basicsDraw(function () {
+      ctx.fillStyle = 'blue'
       ctx.fillRect(rd.x, rd.y, config.basicHeight, config.basicWidth)
     })
   }

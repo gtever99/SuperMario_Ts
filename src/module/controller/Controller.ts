@@ -22,6 +22,7 @@ class Controller {
   draw = () => {
     Store.ctx.clearRect(0, 0, Map.boundaryX, Map.boundaryX)
     Map.renderMap()
+    Protagonist.drawProtagonist()
     requestAnimationFrame(this.draw)
   }
 }

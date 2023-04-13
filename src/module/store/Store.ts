@@ -1,6 +1,6 @@
 // 此处存放所有类共用的属性或方法
 
-import { MapData } from "./store-d"
+import { MapData, HitItem } from "./store-d"
 import mapInfo from "../map/mapInfo"
 import { Map_enemy, Map_back } from '../map/map-d'
 
@@ -30,13 +30,26 @@ class Store {
     this.ctx = this.canvas.getContext('2d')!
   }
 
-  // 绘制方法
+  // 绘制的基礎方法
   basicsDraw(callback: Function) {
     this.ctx.beginPath()
     this.ctx.save()
     callback()
     this.ctx.restore()
     this.ctx.beginPath()
+  }
+
+  /**
+   * 碰撞检测
+   * @param hitObj1 第一个需要检测碰撞的x，y，w，h
+   * @param hitObj2 第二个需要检测碰撞的x，y，w，h
+   * @return Boolean
+   */
+  hitDetection(hitObj1: HitItem, hitObj2: HitItem) {
+    return hitObj1.x + hitObj1.w >= hitObj2.x &&
+      hitObj1.x <= hitObj2.x + hitObj2.w &&
+      hitObj1.y + hitObj1.h >= hitObj2.y &&
+      hitObj1.y <= hitObj2.y + hitObj2.h;
   }
 
   // 获取当前关卡信息

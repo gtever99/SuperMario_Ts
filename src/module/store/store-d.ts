@@ -4,3 +4,11 @@ export interface MapData {
   // 地图类型
   type: Map_Type,
 }
+
+// 碰撞检测对象
+export interface HitItem {
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+}
