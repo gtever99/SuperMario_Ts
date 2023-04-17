@@ -1,5 +1,4 @@
 // 此处存放所有类共用的属性或方法
-
 import { MapData, HitItem } from "./store-d"
 import mapInfo from "../map/mapInfo"
 import { Map_enemy, Map_back } from '../map/map-d'
@@ -19,15 +18,18 @@ class Store {
   canvas: HTMLCanvasElement
   // canvas的2d上下文对象
   ctx: CanvasRenderingContext2D
+  // 防抖的定时器ID
+  debunceTimeId: NodeJS.Timer | undefined
 
   constructor() {
     this.isStart = false
     this.level = 0
     this.mapData = []
-    this.enemyEnum = ['d-mo', 'd-gui']
-    this.backMnum = ['', 'q', 'm-bd', 'm-gj', 'd', 'lu', 'd-sh', `q-jinbi-?`]
+    this.enemyEnum = ['@']
+    this.backMnum = ['=']
     this.canvas = document.querySelector('canvas')!
     this.ctx = this.canvas.getContext('2d')!
+    this.debunceTimeId = undefined;
   }
 
   // 绘制的基礎方法
@@ -46,10 +48,23 @@ class Store {
    * @return Boolean
    */
   hitDetection(hitObj1: HitItem, hitObj2: HitItem) {
-    return hitObj1.x + hitObj1.w >= hitObj2.x &&
-      hitObj1.x <= hitObj2.x + hitObj2.w &&
-      hitObj1.y + hitObj1.h >= hitObj2.y &&
-      hitObj1.y <= hitObj2.y + hitObj2.h;
+    return hitObj1.x + hitObj1.w > hitObj2.x &&
+      hitObj1.x < hitObj2.x + hitObj2.w &&
+      hitObj1.y + hitObj1.h > hitObj2.y &&
+      hitObj1.y < hitObj2.y + hitObj2.h;
+  }
+
+  // 防抖函数
+  debunce(fn:Function, delay: number): Function {
+    return (...arg: any[]) => {
+      if (this.debunceTimeId) {
+        clearInterval(this.debunceTimeId);
+      }
+      this.debunceTimeId = setTimeout(() => {
+        fn(...arg)
+        this.debunceTimeId = undefined;
+      }, delay)
+    }
   }
 
   // 获取当前关卡信息
