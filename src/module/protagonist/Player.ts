@@ -38,39 +38,32 @@ class Player extends Physical{
     Store.ctx.translate(0, this.viewportY)
   }
 
-  // 移动操作
+  // 用户操作
   moveHandle = (e: KeyboardEvent) => {
+    // 跳跃
     if (e.key === 'w') {
       if (this.prevDown_jump) return
-      // 开始跳跃
       this.jump(300).then(hitRes => {
         console.log(hitRes);
       })
       this.prevDown_jump = true
     } else if (e.key === 'a' || e.key === 'd') {
+      // 移动
       if (this.prevDown_move) return
-      // 开始移动
       this.prevDown_move = true
       this.move(e.key, (isHit: 0 | 1) => {
         if (isHit === 0) {
+          // 只有主角位置在中间的时候才允许视口移动
+          const flag = this.x > Store.getCanvasInfo.w / 2 && this.x < (Map.boundaryX - Store.getCanvasInfo.w / 2);
           // 左移
           if (e.key === 'a') {
             // 只有当前位置处于当前视口中间的时候才允许视口移动
-            if (this.x > Store.getCanvasInfo.w / 2) {
-              Store.ctx.translate(this.moveSpeed, 0)
-            }
+            if (flag) Store.ctx.translate(this.moveSpeed, 0)
           } else {
             // 右移
-            if (this.x > Store.getCanvasInfo.w / 2) {
-              Store.ctx.translate(-this.moveSpeed, 0)
-            }
+            if (flag) Store.ctx.translate(-this.moveSpeed, 0)
           }
-        } else {
-          // 停止移动
-          // this.prevDown_move = false
-          // this.endMove()
         }
-        // console.log(this.viewportX, this.x, Map.boundaryX, Store.getCanvasInfo.w / 2)
       });
     }
   }
