@@ -73,33 +73,38 @@ export default class Physical {
   /**
    * 跳跃
    * @param time 跳跃的持续时间
+   * @return promise--碰撞到的时候返回的回调(参数1：碰撞到的地图对象)
    */
   jump(time: number) {
-    let { x, y } = this;
-    // 在降落的时候无法跳跃
-    if (this.isLevitation) return;
-    const dateNow = Date.now();
-    this.isJump = true;
-    // 此事件会一直执行
-    const jumpHandle = () => {
-      if (!this.isJump) return;
-      y -= this.jumpSpeed
-      const isHit = this.mapHit(this.x, y)
-      console.log("跳跃", isHit, x, y)
-      // 没碰到
-      if (!isHit) {
-        this.y = y
-      } else {
-        this.endJump();
+    return new Promise(resolve => {
+      let { y } = this;
+      // 在降落的时候无法跳跃
+      if (this.isLevitation) return;
+      const dateNow = Date.now();
+      this.isJump = true;
+      // 此事件会一直执行
+      const jumpHandle = () => {
+        if (!this.isJump) return;
+        y -= this.jumpSpeed
+        const isHit = this.mapHit(this.x, y)
+        // 没碰到
+        if (!isHit) {
+          this.y = y
+        } else {
+          resolve(isHit)
+          this.endJump();
+        }
+        // 递归执行
+        this.jumpTimer = requestAnimationFrame(jumpHandle)
+        // 如果超出规定事件会停止该事件
+        if (Date.now() - dateNow > time) {
+          this.endJump();
+        }
       }
-      // 递归执行
-      this.jumpTimer = requestAnimationFrame(jumpHandle)
-      // 如果超出规定事件会停止该事件
-      if (Date.now() - dateNow > time) {
-        this.endJump();
-      }
-    }
-    jumpHandle()
+      jumpHandle()
+    }).catch(err => {
+      console.log(err)
+    })
   }
 
   // 结束跳跃

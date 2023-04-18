@@ -5,6 +5,7 @@ import Store from "../store/Store";
 import Map from "../map/Map";
 import Config from "../config";
 import Physical from "../physical/Physical";
+import {RenderMapData} from "../map/map-d";
 
 class Player extends Physical{
   // 視口的X位置
@@ -42,7 +43,9 @@ class Player extends Physical{
     if (e.key === 'w') {
       if (this.prevDown_jump) return
       // 开始跳跃
-      this.jump(300);
+      this.jump(300).then(hitRes => {
+        console.log(hitRes);
+      })
       this.prevDown_jump = true
     } else if (e.key === 'a' || e.key === 'd') {
       if (this.prevDown_move) return
