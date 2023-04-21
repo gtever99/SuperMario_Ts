@@ -28,7 +28,7 @@ export default class Physical {
   moveTimer: number | undefined
   // 移动的方向
   dir: 'a' | 'd'
-  // 速率-不会更改
+  // 初始速率
   private readonly SPEED: number;
   // 跳跃速率
   jumpSpeed: number
@@ -64,7 +64,7 @@ export default class Physical {
       } else {
         // 只有被碰撞才会进入此条件
         this.isLevitation = false
-        // 如果速率设置太高那么可能会出现不贴近的情况
+        // 如果速率设置太高那么可能会出现不贴紧的情况
         // 此段代码规定：在碰撞到的情况下，会将速率设置成可以贴近其它块的值，如果跳跃的时候会将值回复
         if (!this.isJump) {
           this.jumpSpeed = 1;
@@ -72,7 +72,7 @@ export default class Physical {
           this.jumpSpeed = this.SPEED;
         }
       }
-      if (fn) fn()
+      fn && fn()
       requestAnimationFrame(declineHandle)
     }
     declineHandle()

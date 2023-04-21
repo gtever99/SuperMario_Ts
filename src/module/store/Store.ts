@@ -21,17 +21,22 @@ class Store {
   // 防抖的定时器ID
   debunceTimeId: NodeJS.Timer | undefined
   cutObj: CutObj
+  // 素材图片
+  materialImg: HTMLImageElement
 
   constructor() {
+    const material = new Image();
+    material.src = require("../../../public/images/material.gif").default;
     this.isStart = false
     this.level = 0
     this.mapData = []
     this.enemyEnum = ['@']
-    this.backMnum = ['=']
+    this.backMnum = ['=', '?']
     this.canvas = document.querySelector('canvas')!
     this.ctx = this.canvas.getContext('2d')!
     this.debunceTimeId = undefined;
     this.cutObj = {}
+    this.materialImg = material;
   }
 
   /**

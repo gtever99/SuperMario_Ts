@@ -63,7 +63,8 @@ class Map {
   renderMap() {
     // 要绘制的元素方法，普遍为：[draw-当前的背景类型],如墙是=，那么绘制墙为 draw-=
     this.renderMapData.map(v => {
-      this[`draw-${<'='>v.type}`](v)
+      const f = this[`draw-${<'='>v.type}`];
+      f && f(v);
     })
   }
 

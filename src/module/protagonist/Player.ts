@@ -5,7 +5,6 @@ import Store from "../store/Store";
 import Map from "../map/Map";
 import Physical from "../physical/Physical";
 import EnemyPlant from "../enemy/EnemyPlant";
-import loadImages from "../loadImages/LoadImages";
 
 class Player extends Physical{
   // 視口的X位置
@@ -16,15 +15,21 @@ class Player extends Physical{
   prevDown_jump: Boolean
   // 防止 keydown事件 多次执行 -- 用于移动
   prevDown_move: Boolean
+  // 主角的级别 0=最小状态 1=变大 2=变大且发射子弹
+  level: 0 | 1 | 2
 
   constructor() {
     super(0, 0, 5)
     this.viewportX = 0
     this.viewportY = 0
-    this.w = 20;
-    this.h = 20
+    this.w = 13
+    this.h = 16
+    // this.w = 16
+    // this.h = 30
+
     this.prevDown_jump = false
     this.prevDown_move = false
+    this.level = 0
   }
 
   // 初始化主角
@@ -98,21 +103,34 @@ class Player extends Physical{
   // 绘制主角
   drawProtagonist() {
     const { ctx } = Store;
+    const cs = [
+      // 0、1、2、3、4 --- x, y, w, h顺序
+      [[139, 506, 17, 16], [23, 506, 17, 16], [85, 506, 12, 16], [100, 506, 14, 16], [117, 506, 16, 16]], // 状态 0
+      [[167, 546, 16, 32], [48, 546, 16, 32], [95, 547, 16, 31], [115, 547, 16, 30], [140, 546, 16, 32]], // 状态 1
+      [[238, 630, 16, 32], [119, 630, 16, 32], [166, 630, 16, 31], [186, 630, 16, 30], [211, 630, 16, 32]]  // 状态 2
+    ][this.level]
     Store.basicsDraw(() => {
       // 反转图片
       if (this.dir === 'a') {
         ctx.translate(this.w + this.x * 2, 0);
         ctx.scale(-1, 1);
       }
+      // 跳跃或者悬空的时候
+      if (this.isLevitation ||this.isJump) {
+        return ctx.drawImage(Store.materialImg, cs[0][0], cs[0][1], cs[0][2], cs[0][3], this.x, this.y, this.w, this.h) // 0
+      }
       // 不在移动
       if (!this.prevDown_move) {
-        return ctx.drawImage(loadImages.playerImg, 1, 60, 12, 16, this.x, this.y, this.w, this.h)
+        return ctx.drawImage(Store.materialImg, cs[1][0], cs[1][1], cs[1][2], cs[1][3], this.x, this.y, this.w, this.h) // 1
       }
       // 在移动
-      if (Store.cutImages(1, 180, "pMove")) {
-        ctx.drawImage(loadImages.playerImg, 16, 60, 16, 16, this.x, this.y, this.w, this.h)
+      const cutNum = Store.cutImages(2, 180, "pMove");
+      if (cutNum === 0) {
+        ctx.drawImage(Store.materialImg, cs[2][0], cs[2][1], cs[2][2], cs[2][3], this.x, this.y, this.w, this.h) // 2
+      } else if (cutNum === 1) {
+        ctx.drawImage(Store.materialImg, cs[3][0], cs[3][1], cs[3][2], cs[3][3], this.x, this.y, this.w, this.h) // 3
       } else {
-        ctx.drawImage(loadImages.playerImg, 34, 60, 16, 18, this.x, this.y, this.w, this.h)
+        ctx.drawImage(Store.materialImg, cs[4][0], cs[4][1], cs[4][2], cs[4][3], this.x, this.y, this.w, this.h) // 4
       }
     })
   }

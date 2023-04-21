@@ -24,6 +24,6 @@ export interface RenderMapData {
 // 敌人 @：蘑菇
 export type Map_enemy = '@'
 // 背景 =：墙
-export type Map_back = '='
+export type Map_back = '=' | '?'
 
 export type Map_Type = string // 完整的地图信息
