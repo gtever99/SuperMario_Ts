@@ -3,9 +3,9 @@
  */
 import Store from "../store/Store";
 import Map from "../map/Map";
-import Config from "../config";
 import Physical from "../physical/Physical";
-import {RenderMapData} from "../map/map-d";
+import EnemyPlant from "../enemy/EnemyPlant";
+import loadImages from "../loadImages/LoadImages";
 
 class Player extends Physical{
   // 視口的X位置
@@ -18,9 +18,11 @@ class Player extends Physical{
   prevDown_move: Boolean
 
   constructor() {
-    super(20, 20)
+    super(0, 0, 5)
     this.viewportX = 0
     this.viewportY = 0
+    this.w = 20;
+    this.h = 20
     this.prevDown_jump = false
     this.prevDown_move = false
   }
@@ -36,6 +38,17 @@ class Player extends Physical{
     this.viewportY = Map.boundaryY
     this.y = -Map.boundaryY + 280
     Store.ctx.translate(0, this.viewportY)
+
+    // 下降
+    this.decline(() => {
+      EnemyPlant.enemyList.find((v, i) => {
+        // 只有在下降状态的时候才会走下面的逻辑
+        if (!v || !this.isLevitation) return
+        if (Store.hitDetection(this as Physical, v)) {
+          delete EnemyPlant.enemyList[i];
+        }
+      })
+    });
   }
 
   // 用户操作
@@ -43,7 +56,7 @@ class Player extends Physical{
     // 跳跃
     if (e.key === 'w') {
       if (this.prevDown_jump) return
-      this.jump(300).then(hitRes => {
+      this.jump(380).then(hitRes => {
         console.log(hitRes);
       })
       this.prevDown_jump = true
@@ -51,7 +64,8 @@ class Player extends Physical{
       // 移动
       if (this.prevDown_move) return
       this.prevDown_move = true
-      this.move(e.key, (isHit: 0 | 1) => {
+      this.dir = e.key
+      this.move((isHit: 0 | 1) => {
         if (isHit === 0) {
           // 只有主角位置在中间的时候才允许视口移动
           const flag = this.x > Store.getCanvasInfo.w / 2 && this.x < (Map.boundaryX - Store.getCanvasInfo.w / 2);
@@ -83,11 +97,23 @@ class Player extends Physical{
 
   // 绘制主角
   drawProtagonist() {
-    this.decline();
     const { ctx } = Store;
     Store.basicsDraw(() => {
-      ctx.fillStyle = 'green';
-      ctx.fillRect(this.x, this.y, this.w, this.h);
+      // 反转图片
+      if (this.dir === 'a') {
+        ctx.translate(this.w + this.x * 2, 0);
+        ctx.scale(-1, 1);
+      }
+      // 不在移动
+      if (!this.prevDown_move) {
+        return ctx.drawImage(loadImages.playerImg, 1, 60, 12, 16, this.x, this.y, this.w, this.h)
+      }
+      // 在移动
+      if (Store.cutImages(1, 180, "pMove")) {
+        ctx.drawImage(loadImages.playerImg, 16, 60, 16, 16, this.x, this.y, this.w, this.h)
+      } else {
+        ctx.drawImage(loadImages.playerImg, 34, 60, 16, 18, this.x, this.y, this.w, this.h)
+      }
     })
   }
 }

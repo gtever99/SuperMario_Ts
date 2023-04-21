@@ -5,6 +5,7 @@
 import Map from "../map/Map";
 import Protagonist from "../protagonist/Player";
 import Store from "../store/Store";
+import EnemyPlant from "../enemy/EnemyPlant";
 
 class Controller {
   // 初始化整个游戏
@@ -23,6 +24,7 @@ class Controller {
     Store.ctx.clearRect(0, 0, Map.boundaryX, Map.boundaryX)
     Map.renderMap()
     Protagonist.drawProtagonist()
+    EnemyPlant.drawAllEnemy();
     requestAnimationFrame(this.draw)
   }
 }

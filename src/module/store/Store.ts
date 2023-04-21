@@ -1,5 +1,5 @@
 // 此处存放所有类共用的属性或方法
-import { MapData, HitItem } from "./store-d"
+import {MapData, HitItem, CutObj} from "./store-d"
 import mapInfo from "../map/mapInfo"
 import { Map_enemy, Map_back } from '../map/map-d'
 
@@ -20,6 +20,7 @@ class Store {
   ctx: CanvasRenderingContext2D
   // 防抖的定时器ID
   debunceTimeId: NodeJS.Timer | undefined
+  cutObj: CutObj
 
   constructor() {
     this.isStart = false
@@ -30,6 +31,30 @@ class Store {
     this.canvas = document.querySelector('canvas')!
     this.ctx = this.canvas.getContext('2d')!
     this.debunceTimeId = undefined;
+    this.cutObj = {}
+  }
+
+  /**
+   * 切换切图，每隔 gapTime 毫秒，当前状态会 ++,到了max会重置为0
+   * 状态从0开始
+   * @param max 当前状态的最大值，如果当前max为2，那么status为0、1、2、0、1、2...
+   * @param gapTime 间隔时间
+   * @param key 一个唯一的key值 -- 这个方法可能会调用很多次，用于记录私有状态
+   * @return Promise 返回当前状态的值
+   */
+  cutImages(max: number, gapTime: number, key: string) {
+    if (!(key in this.cutObj)) {
+      this.cutObj[key] = {
+        status: 0,
+        currentTime: 0
+      };
+    }
+    let { currentTime, status } = this.cutObj[key];
+    if (Date.now() - gapTime > currentTime) {
+      this.cutObj[key].currentTime = Date.now()
+      this.cutObj[key].status = status >= max ? 0 : ++status
+    }
+    return status;
   }
 
   // 绘制的基礎方法

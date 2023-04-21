@@ -27,7 +27,8 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      { test: /\.txt$/, use: 'raw-loader' }
+      { test: /\.txt$/, use: 'raw-loader' },
+      { test: /\.png$/, use: 'file-loader' },
     ]
   },
   plugins: [

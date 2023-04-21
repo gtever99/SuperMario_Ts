@@ -12,3 +12,13 @@ export interface HitItem {
   w: number,
   h: number,
 }
+
+// 切换
+export interface CutObj {
+  [key: string]: {
+    // 切换状态
+    status: number,
+    // 当前时间
+    currentTime: number
+  }
+}

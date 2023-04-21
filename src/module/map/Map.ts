@@ -5,6 +5,7 @@
 import Store from "../store/Store";
 import {Map_back, RenderMapData} from './map-d'
 import config from "../config";
+import enemyPlant from "../enemy/EnemyPlant";
 
 class Map {
   // 要渲染的数据
@@ -38,17 +39,18 @@ class Map {
         i2 ++
         // 空数据没有插入的必要
         if (v2.trim() === '') continue
+        const x = i2 * basicWidth, y = i1 * basicWidth
         // 将背景和敌人数据分离
         if (Store.backMnum.includes((<Map_back>v2))){
           // 背景 ---------
           this.renderMapData.push({
-            x: i2 * basicWidth,
-            y: (i1 * basicHeight),
+            x,
+            y,
             type: <Map_back>v2
           })
         } else {
           // 敌人 ---------
-          console.log(v2)
+          enemyPlant[v2 as '@'](x, y)
         }
       }
     })
