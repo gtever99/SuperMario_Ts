@@ -157,7 +157,7 @@ export default class Physical {
    * @return 碰撞到的地图元素
    */
   mapHit(x: number, y: number) {
-    return Map.renderMapData.find(v => {
+    return Map.getMapData.find(v => {
       // 碰撞检测
       return Store.hitDetection({
         x: x, y: y, h: this.h, w: this.w

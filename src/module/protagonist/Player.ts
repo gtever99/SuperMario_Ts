@@ -5,6 +5,7 @@ import Store from "../store/Store";
 import Map from "../map/Map";
 import Physical from "../physical/Physical";
 import EnemyPlant from "../enemy/EnemyPlant";
+import Config from "../config";
 
 class Player extends Physical{
   // 視口的X位置
@@ -40,9 +41,9 @@ class Player extends Physical{
     addEventListener('keyup', this.upHandle)
     // 位置初始化
     this.viewportX = 0;
-    this.viewportY = Map.boundaryY
-    this.y = -Map.boundaryY + 280
-    Store.ctx.translate(0, this.viewportY)
+    this.viewportY = Map.boundaryY - Store.getCanvasInfo.h
+    this.y = (Map.boundaryY - Config.basicHeight) - (this.h + 100)
+    Store.ctx.translate(0, -this.viewportY)
 
     // 下降
     this.decline(() => {
@@ -77,10 +78,16 @@ class Player extends Physical{
           // 左移
           if (e.key === 'a') {
             // 只有当前位置处于当前视口中间的时候才允许视口移动
-            if (flag) Store.ctx.translate(this.moveSpeed, 0)
+            if (flag) {
+              this.viewportX -= this.moveSpeed;
+              Store.ctx.translate(this.moveSpeed, 0)
+            }
           } else {
             // 右移
-            if (flag) Store.ctx.translate(-this.moveSpeed, 0)
+            if (flag) {
+              this.viewportX += this.moveSpeed;
+              Store.ctx.translate(-this.moveSpeed, 0)
+            }
           }
         }
       });

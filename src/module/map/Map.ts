@@ -6,6 +6,7 @@ import Store from "../store/Store";
 import {Map_back, RenderMapData} from './map-d'
 import config from "../config";
 import enemyPlant from "../enemy/EnemyPlant";
+import Player from "../protagonist/Player";
 
 class Map {
   // 要渲染的数据
@@ -26,10 +27,9 @@ class Map {
     const { bodyMap } = Store.getCurrentMapInfo
     const { map } = bodyMap
     const { basicWidth, basicHeight } = config
-    const { h } = Store.getCanvasInfo
     // 计算最大边界的宽和高
 
-    this.boundaryY = -((map.length * basicHeight) - h);
+    this.boundaryY = map.length * basicHeight;
     this.boundaryX = map[0].length * basicWidth;
 
     // 1 层
@@ -54,7 +54,6 @@ class Map {
         }
       }
     })
-    // console.log(this.renderMapData)
     // 渲染 ------------
     this.renderMap()
   }
@@ -62,7 +61,7 @@ class Map {
   // 渲染游戏地图
   renderMap() {
     // 要绘制的元素方法，普遍为：[draw-当前的背景类型],如墙是=，那么绘制墙为 draw-=
-    this.renderMapData.map(v => {
+    this.getMapData.map(v => {
       const f = this[`draw-${<'='>v.type}`];
       f && f(v);
     })
@@ -76,6 +75,21 @@ class Map {
     const { ctx } = Store;
     Store.basicsDraw(function () {
       ctx.fillRect(rd.x, rd.y, config.basicHeight, config.basicWidth)
+    })
+  }
+
+  // 获取地图元素数据，只会返回在当前视口内的数据
+  get getMapData() {
+    return this.renderMapData.filter(v => {
+      return Store.hitDetection({
+        ...v,
+        w: config.basicHeight,
+        h: config.basicWidth
+      }, {
+        x: Player.viewportX,
+        y: Player.viewportY,
+        ...Store.getCanvasInfo
+      })
     })
   }
 }
