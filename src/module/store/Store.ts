@@ -34,9 +34,9 @@ class Store {
     this.backMnum = ['=', '?']
     this.canvas = document.querySelector('canvas')!
     this.ctx = this.canvas.getContext('2d')!
-    this.debunceTimeId = undefined;
+    this.debunceTimeId = undefined
     this.cutObj = {}
-    this.materialImg = material;
+    this.materialImg = material
   }
 
   /**

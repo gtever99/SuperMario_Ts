@@ -1,6 +1,5 @@
 import Map from "../map/Map";
 import Store from "../store/Store";
-import Config from "../config";
 
 /**
  * 物体类，所有物体(如：敌人、主角、蘑菇)的父类
@@ -14,6 +13,8 @@ export default class Physical {
   isLevitation: Boolean
   // 是否在跳跃状态
   isJump: Boolean
+  // 是否在移动状态
+  isMove: Boolean
   // x位置
   x: number
   // y位置
@@ -32,12 +33,13 @@ export default class Physical {
   private readonly SPEED: number;
   // 跳跃速率
   jumpSpeed: number
-  // 移动速率 -- 值为跳跃速率 / 2 再上取整
+  // 移动速率 -- 值为跳跃速率 / 2 再下取整
   moveSpeed: number
 
   constructor(x: number, y: number, seed: number) {
     this.isLevitation = false
     this.isJump = false
+    this.isMove = false
     this.dir = 'd'
     this.x = x
     this.y = y
@@ -47,7 +49,7 @@ export default class Physical {
     this.moveTimer = undefined;
     this.SPEED = seed
     this.jumpSpeed = this.SPEED
-    this.moveSpeed = Math.ceil(this.SPEED / 2)
+    this.moveSpeed = Math.floor(this.SPEED / 2)
   }
 
   // 下降
@@ -62,15 +64,13 @@ export default class Physical {
         this.isLevitation = true
         this.y = y;
       } else {
+        /**
+         * 如果当前 y 值为 497，目标值为500，速率为4，当前碰撞检测就为true
+         * 但是这样会发生 当前y值一直在497的情况，这样会会出现3px的悬空，所以要减去误差值
+         */
+        hitRes && (this.y += hitRes!.y - (this.y + this.h))
         // 只有被碰撞才会进入此条件
         this.isLevitation = false
-        // 如果速率设置太高那么可能会出现不贴紧的情况
-        // 此段代码规定：在碰撞到的情况下，会将速率设置成可以贴近其它块的值，如果跳跃的时候会将值回复
-        if (!this.isJump) {
-          this.jumpSpeed = 1;
-        } else {
-          this.jumpSpeed = this.SPEED;
-        }
       }
       fn && fn()
       requestAnimationFrame(declineHandle)
@@ -128,8 +128,6 @@ export default class Physical {
   move = (moveFn?: Function) => {
     const moveHandle = () => {
       let { x, y } = this;
-      // 将速率重置
-      this.jumpSpeed = this.SPEED;
       // 移动计算
       if (this.dir === 'a') {
         x -= this.moveSpeed
@@ -162,7 +160,7 @@ export default class Physical {
       return Store.hitDetection({
         x: x, y: y, h: this.h, w: this.w
       }, {
-        x: v.x, y: v.y, h: Config.basicHeight, w: Config.basicWidth
+        x: v.x, y: v.y, h: Map.BASIC_HEIGHT, w: Map.BASIC_WIDTH
       })
     })
   }

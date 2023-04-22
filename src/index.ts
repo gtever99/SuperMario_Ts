@@ -3,4 +3,4 @@ import Controller from "./module/controller/Controller";
 import "./styles/index.scss"
 
 Controller.init()
-// 1
+console.log(222)

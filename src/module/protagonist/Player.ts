@@ -5,7 +5,6 @@ import Store from "../store/Store";
 import Map from "../map/Map";
 import Physical from "../physical/Physical";
 import EnemyPlant from "../enemy/EnemyPlant";
-import Config from "../config";
 
 class Player extends Physical{
   // 視口的X位置
@@ -20,13 +19,13 @@ class Player extends Physical{
   level: 0 | 1 | 2
 
   constructor() {
-    super(0, 0, 5)
+    super(0, 0, 7)
     this.viewportX = 0
     this.viewportY = 0
-    this.w = 13
-    this.h = 16
-    // this.w = 16
-    // this.h = 30
+    this.w = 20
+    this.h = 25
+    // this.w = 20
+    // this.h = 35
 
     this.prevDown_jump = false
     this.prevDown_move = false
@@ -42,7 +41,7 @@ class Player extends Physical{
     // 位置初始化
     this.viewportX = 0;
     this.viewportY = Map.boundaryY - Store.getCanvasInfo.h
-    this.y = (Map.boundaryY - Config.basicHeight) - (this.h + 100)
+    this.y = (Map.boundaryY - Map.BASIC_HEIGHT) - (this.h + 100)
     Store.ctx.translate(0, -this.viewportY)
 
     // 下降
@@ -50,6 +49,7 @@ class Player extends Physical{
       EnemyPlant.enemyList.find((v, i) => {
         // 只有在下降状态的时候才会走下面的逻辑
         if (!v || !this.isLevitation) return
+        // 对敌人的碰撞检测
         if (Store.hitDetection(this as Physical, v)) {
           delete EnemyPlant.enemyList[i];
         }
@@ -62,7 +62,8 @@ class Player extends Physical{
     // 跳跃
     if (e.key === 'w') {
       if (this.prevDown_jump) return
-      this.jump(380).then(hitRes => {
+      // 跳跃方法
+      this.jump(420).then(hitRes => {
         console.log(hitRes);
       })
       this.prevDown_jump = true
@@ -123,7 +124,7 @@ class Player extends Physical{
         ctx.scale(-1, 1);
       }
       // 跳跃或者悬空的时候
-      if (this.isLevitation ||this.isJump) {
+      if (this.isLevitation || this.isJump) {
         return ctx.drawImage(Store.materialImg, cs[0][0], cs[0][1], cs[0][2], cs[0][3], this.x, this.y, this.w, this.h) // 0
       }
       // 不在移动

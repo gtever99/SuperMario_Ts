@@ -4,7 +4,6 @@
 
 import Store from "../store/Store";
 import {Map_back, RenderMapData} from './map-d'
-import config from "../config";
 import enemyPlant from "../enemy/EnemyPlant";
 import Player from "../protagonist/Player";
 
@@ -15,22 +14,28 @@ class Map {
   boundaryY: number
   // 最大 Y 边界值
   boundaryX: number
+  // 每一个地图上块的宽度
+  BASIC_WIDTH: number
+  // 每一个地图上块的高度
+  BASIC_HEIGHT: number
 
   constructor() {
     this.renderMapData = []
     this.boundaryY = 0
     this.boundaryX = 0
+    this.BASIC_WIDTH = 45
+    this.BASIC_HEIGHT = 40
   }
 
   // 初始化游戏关卡
   init() {
     const { bodyMap } = Store.getCurrentMapInfo
     const { map } = bodyMap
-    const { basicWidth, basicHeight } = config
+    const { BASIC_WIDTH, BASIC_HEIGHT } = this
     // 计算最大边界的宽和高
 
-    this.boundaryY = map.length * basicHeight;
-    this.boundaryX = map[0].length * basicWidth;
+    this.boundaryY = map.length * BASIC_HEIGHT;
+    this.boundaryX = map[0].length * BASIC_HEIGHT;
 
     // 1 层
     map.map((v1, i1) => {
@@ -39,7 +44,7 @@ class Map {
         i2 ++
         // 空数据没有插入的必要
         if (v2.trim() === '') continue
-        const x = i2 * basicWidth, y = i1 * basicWidth
+        const x = i2 * BASIC_WIDTH, y = i1 * BASIC_HEIGHT
         // 将背景和敌人数据分离
         if (Store.backMnum.includes((<Map_back>v2))){
           // 背景 ---------
@@ -62,8 +67,7 @@ class Map {
   renderMap() {
     // 要绘制的元素方法，普遍为：[draw-当前的背景类型],如墙是=，那么绘制墙为 draw-=
     this.getMapData.map(v => {
-      const f = this[`draw-${<'='>v.type}`];
-      f && f(v);
+      this[`draw-${<'='>v.type}`] && this[`draw-${<'='>v.type}`](v);
     })
   }
 
@@ -73,8 +77,8 @@ class Map {
    */
   'draw-='(rd: RenderMapData) {
     const { ctx } = Store;
-    Store.basicsDraw(function () {
-      ctx.fillRect(rd.x, rd.y, config.basicHeight, config.basicWidth)
+    Store.basicsDraw(() => {
+      ctx.fillRect(rd.x, rd.y, (this as Map).BASIC_WIDTH, (this as Map).BASIC_HEIGHT)
     })
   }
 
@@ -83,8 +87,8 @@ class Map {
     return this.renderMapData.filter(v => {
       return Store.hitDetection({
         ...v,
-        w: config.basicHeight,
-        h: config.basicWidth
+        w: this.BASIC_WIDTH,
+        h: this.BASIC_HEIGHT
       }, {
         x: Player.viewportX,
         y: Player.viewportY,
