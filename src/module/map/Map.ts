@@ -6,6 +6,9 @@ import Store from "../store/Store";
 import {Map_back, RenderMapData} from './map-d'
 import enemyPlant from "../enemy/EnemyPlant";
 import Player from "../protagonist/Player";
+import Road from "./mapList/Road";
+import {WallUnknown} from "./mapList/WallUnknown";
+import CommonWall from "./mapList/CommonWall";
 
 class Map {
   // 要渲染的数据
@@ -23,8 +26,8 @@ class Map {
     this.renderMapData = []
     this.boundaryY = 0
     this.boundaryX = 0
-    this.BASIC_WIDTH = 45
-    this.BASIC_HEIGHT = 40
+    this.BASIC_WIDTH = 35
+    this.BASIC_HEIGHT = 35
   }
 
   // 初始化游戏关卡
@@ -48,11 +51,7 @@ class Map {
         // 将背景和敌人数据分离
         if (Store.backMnum.includes((<Map_back>v2))){
           // 背景 ---------
-          this.renderMapData.push({
-            x,
-            y,
-            type: <Map_back>v2
-          })
+          this.renderMapData.push(this.mapPlant(<Map_back>v2, x, y)!)
         } else {
           // 敌人 ---------
           enemyPlant[v2 as '@'](x, y)
@@ -63,23 +62,24 @@ class Map {
     this.renderMap()
   }
 
-  // 渲染游戏地图
-  renderMap() {
-    // 要绘制的元素方法，普遍为：[draw-当前的背景类型],如墙是=，那么绘制墙为 draw-=
-    this.getMapData.map(v => {
-      this[`draw-${<'='>v.type}`] && this[`draw-${<'='>v.type}`](v);
-    })
+  // 返回各种地图类
+  mapPlant (type: Map_back, x: number, y: number) {
+    if (type === '^' || type === '$' || type === '?' || type === '*') {
+      return new WallUnknown(x, y, type)
+    }
+    switch (type) {
+      case "=": {
+        return new Road(x, y)
+      }
+      case "#": {
+        return new CommonWall(x, y)
+      }
+    }
   }
 
-  /**
-   * 绘制墙
-   * @param rd
-   */
-  'draw-='(rd: RenderMapData) {
-    const { ctx } = Store;
-    Store.basicsDraw(() => {
-      ctx.fillRect(rd.x, rd.y, (this as Map).BASIC_WIDTH, (this as Map).BASIC_HEIGHT)
-    })
+  // 渲染游戏地图
+  renderMap() {
+    this.getMapData.map(v => v.draw())
   }
 
   // 获取地图元素数据，只会返回在当前视口内的数据

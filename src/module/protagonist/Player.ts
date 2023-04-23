@@ -5,6 +5,7 @@ import Store from "../store/Store";
 import Map from "../map/Map";
 import Physical from "../physical/Physical";
 import EnemyPlant from "../enemy/EnemyPlant";
+import {WallUnknown} from "../map/mapList/WallUnknown";
 
 class Player extends Physical{
   // 視口的X位置
@@ -22,8 +23,8 @@ class Player extends Physical{
     super(0, 0, 7)
     this.viewportX = 0
     this.viewportY = 0
-    this.w = 20
-    this.h = 25
+    this.w = 14
+    this.h = 20
     // this.w = 20
     // this.h = 35
 
@@ -64,7 +65,15 @@ class Player extends Physical{
       if (this.prevDown_jump) return
       // 跳跃方法
       this.jump(420).then(hitRes => {
-        console.log(hitRes);
+        // 主角在最小状态，并且顶到了墙会使墙上移
+        if (this.level === 0 && hitRes!.TYPE === '#' ) {
+          hitRes!.top()
+          return;
+        }
+        // 问号区域
+        if (hitRes!.TYPE === '^' || hitRes!.TYPE === '$' || hitRes!.TYPE === '?' || hitRes!.TYPE === '*') {
+          (hitRes! as WallUnknown).appear();
+        }
       })
       this.prevDown_jump = true
     } else if (e.key === 'a' || e.key === 'd') {
@@ -113,7 +122,7 @@ class Player extends Physical{
     const { ctx } = Store;
     const cs = [
       // 0、1、2、3、4 --- x, y, w, h顺序
-      [[139, 506, 17, 16], [23, 506, 17, 16], [85, 506, 12, 16], [100, 506, 14, 16], [117, 506, 16, 16]], // 状态 0
+      [[139, 506, 16, 16], [23, 506, 13, 16], [85, 506, 15, 16], [100, 506, 15, 16], [117, 506, 15, 16]], // 状态 0
       [[167, 546, 16, 32], [48, 546, 16, 32], [95, 547, 16, 31], [115, 547, 16, 30], [140, 546, 16, 32]], // 状态 1
       [[238, 630, 16, 32], [119, 630, 16, 32], [166, 630, 16, 31], [186, 630, 16, 30], [211, 630, 16, 32]]  // 状态 2
     ][this.level]

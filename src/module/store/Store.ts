@@ -31,7 +31,7 @@ class Store {
     this.level = 0
     this.mapData = []
     this.enemyEnum = ['@']
-    this.backMnum = ['=', '?']
+    this.backMnum = ['=', '?', '#', '^', '*', '$']
     this.canvas = document.querySelector('canvas')!
     this.ctx = this.canvas.getContext('2d')!
     this.debunceTimeId = undefined

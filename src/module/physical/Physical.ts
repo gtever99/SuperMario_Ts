@@ -1,5 +1,6 @@
 import Map from "../map/Map";
 import Store from "../store/Store";
+import {RenderMapData} from "../map/map-d";
 
 /**
  * 物体类，所有物体(如：敌人、主角、蘑菇)的父类
@@ -84,7 +85,7 @@ export default class Physical {
    * @return promise--碰撞到的时候返回的回调(参数1：碰撞到的地图对象)
    */
   jump(time: number) {
-    return new Promise(resolve => {
+    return new Promise<RenderMapData>(resolve => {
       let { y } = this;
       // 在降落的时候无法跳跃
       if (this.isLevitation) return;
