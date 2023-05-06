@@ -9,6 +9,7 @@ import Player from "../protagonist/Player";
 import Road from "./mapList/Road";
 import {WallUnknown} from "./mapList/WallUnknown";
 import CommonWall from "./mapList/CommonWall";
+import BasicMapBack from "./mapList/BasicMapBack";
 
 class Map {
   // 要渲染的数据
@@ -95,6 +96,15 @@ class Map {
         ...Store.getCanvasInfo
       })
     })
+  }
+
+  /**
+   * 销毁地图元素
+   * @param dGoal 销毁目标
+   */
+  destroyMapItem(dGoal: BasicMapBack) {
+    // 传进的目标值 x、y、TYPE 类型和地图上的一直就过滤掉
+    this.renderMapData = this.renderMapData.filter(v => !(v.x === dGoal.x && v.y === dGoal.y && v.TYPE === dGoal.TYPE))
   }
 }
 

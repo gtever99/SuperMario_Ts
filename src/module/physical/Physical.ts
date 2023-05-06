@@ -28,6 +28,8 @@ export default class Physical {
   jumpTimer: number | undefined
   // 移动的定时器
   moveTimer: number | undefined
+  // 掉落定时器
+  levitationTimer: number | undefined
   // 移动的方向
   dir: 'a' | 'd'
   // 初始速率
@@ -36,8 +38,11 @@ export default class Physical {
   jumpSpeed: number
   // 移动速率 -- 值为跳跃速率 / 2 再下取整
   moveSpeed: number
+  // 是否销毁，如果此值设为true会被销毁
+  isDestroy: Boolean
 
   constructor(x: number, y: number, seed: number) {
+    this.isDestroy = false
     this.isLevitation = false
     this.isJump = false
     this.isMove = false
@@ -47,7 +52,8 @@ export default class Physical {
     this.w = 0
     this.h = 0
     this.jumpTimer = undefined
-    this.moveTimer = undefined;
+    this.moveTimer = undefined
+    this.levitationTimer = undefined
     this.SPEED = seed
     this.jumpSpeed = this.SPEED
     this.moveSpeed = Math.floor(this.SPEED / 2)
@@ -73,8 +79,8 @@ export default class Physical {
         // 只有被碰撞才会进入此条件
         this.isLevitation = false
       }
-      fn && fn()
-      requestAnimationFrame(declineHandle)
+      fn && fn(hitRes)
+      this.levitationTimer = requestAnimationFrame(declineHandle)
     }
     declineHandle()
   }
@@ -140,9 +146,9 @@ export default class Physical {
       if (!hitRes) {
         // 没撞到
         this.x = x
-        if (moveFn) moveFn(0);
+        if (moveFn) moveFn(hitRes);
       } else {
-        if (moveFn) moveFn(1);
+        if (moveFn) moveFn(hitRes);
       }
       this.moveTimer = requestAnimationFrame(moveHandle)
     }
@@ -157,6 +163,10 @@ export default class Physical {
    */
   mapHit(x: number, y: number) {
     return Map.getMapData.find(v => {
+      // 如果当前遍历的值跟当前的this x、y完全重叠证明当前遍历的值就是自己，那么不往下执行
+      if (v.x === this.x && v.y === this.y) {
+        return
+      }
       // 碰撞检测
       return Store.hitDetection({
         x: x, y: y, h: this.h, w: this.w
@@ -169,5 +179,13 @@ export default class Physical {
   // 结束移动
   endMove() {
     window.cancelAnimationFrame(this.moveTimer!)
+  }
+
+  // 销毁
+  destroy() {
+    this.isDestroy = true
+    this.endMove()
+    this.endJump()
+    window.cancelAnimationFrame(this.levitationTimer!)
   }
 }

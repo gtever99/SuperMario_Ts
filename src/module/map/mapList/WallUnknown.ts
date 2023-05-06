@@ -1,8 +1,9 @@
 import BasicMapBack from "./BasicMapBack";
 import Store from "../../store/Store";
 import Map from "../Map";
-import {Wu_back_type} from "../map-d";
+import {Wu_back_type, Prop_type} from "../map-d";
 import Physical from "../../physical/Physical";
+import Prop from "./Prop";
 
 /**
  * '未知方块' 类
@@ -47,18 +48,17 @@ export class WallUnknown extends BasicMapBack {
 
   appear() {
     if (!this.isExist) return;
-    super.top(() => {
-      switch (this.TYPE) {
-        // 金币
-        case "?": {
-          this.appearGold()
-          return;
-        }
-        case "^": {
-          console.log("变大的蘑菇")
-        }
+    super.top()
+    switch (this.TYPE) {
+      // 金币
+      case "?": {
+        this.appearGold()
+        return;
       }
-    })
+      case "^": {
+        this.appearMushroom_big()
+      }
+    }
   }
 
   // 出现金币
@@ -103,4 +103,13 @@ export class WallUnknown extends BasicMapBack {
     }
     goldAnim()
    }
+
+  // 出现道具-变大蘑菇
+  appearMushroom_big() {
+    this.isExist = false
+    let p: null | Prop = new Prop(this.x, this.y, <Prop_type>(this.TYPE + '_'))
+    p.frameWise(() => {
+      p = null
+    })
+  }
 }

@@ -24,7 +24,6 @@ export default class MushroomE extends Physical{
       if (status === 1) {
         this.dir = dir === 'a' ? 'd' : 'a'
       }
-      // console.log(x, y, w, h)
     })
   }
 

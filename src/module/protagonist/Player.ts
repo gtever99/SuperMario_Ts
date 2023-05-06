@@ -6,6 +6,8 @@ import Map from "../map/Map";
 import Physical from "../physical/Physical";
 import EnemyPlant from "../enemy/EnemyPlant";
 import {WallUnknown} from "../map/mapList/WallUnknown";
+import CommonWall from "../map/mapList/CommonWall";
+import {RenderMapData} from "../map/map-d";
 
 class Player extends Physical{
   // 視口的X位置
@@ -18,19 +20,21 @@ class Player extends Physical{
   prevDown_move: Boolean
   // 主角的级别 0=最小状态 1=变大 2=变大且发射子弹
   level: 0 | 1 | 2
+  // 固定一级二级宽度
+  WHALL: number[][]
+  // 是否允许操作
+  isOption: Boolean
 
   constructor() {
     super(0, 0, 7)
     this.viewportX = 0
     this.viewportY = 0
-    this.w = 14
-    this.h = 20
-    // this.w = 20
-    // this.h = 35
-
+    this.WHALL = [[18, 25], [23, 42]]
     this.prevDown_jump = false
     this.prevDown_move = false
     this.level = 0
+    this.isOption = true
+    this.setWH()
   }
 
   // 初始化主角
@@ -60,29 +64,17 @@ class Player extends Physical{
 
   // 用户操作
   moveHandle = (e: KeyboardEvent) => {
+    if (!this.isOption) return;
     // 跳跃
     if (e.key === 'w') {
-      if (this.prevDown_jump) return
-      // 跳跃方法
-      this.jump(420).then(hitRes => {
-        // 主角在最小状态，并且顶到了墙会使墙上移
-        if (this.level === 0 && hitRes!.TYPE === '#' ) {
-          hitRes!.top()
-          return;
-        }
-        // 问号区域
-        if (hitRes!.TYPE === '^' || hitRes!.TYPE === '$' || hitRes!.TYPE === '?' || hitRes!.TYPE === '*') {
-          (hitRes! as WallUnknown).appear();
-        }
-      })
-      this.prevDown_jump = true
+      this.playerJump()
     } else if (e.key === 'a' || e.key === 'd') {
       // 移动
       if (this.prevDown_move) return
       this.prevDown_move = true
       this.dir = e.key
-      this.move((isHit: 0 | 1) => {
-        if (isHit === 0) {
+      this.move((isHit: RenderMapData | undefined) => {
+        if (!isHit) {
           // 只有主角位置在中间的时候才允许视口移动
           const flag = this.x > Store.getCanvasInfo.w / 2 && this.x < (Map.boundaryX - Store.getCanvasInfo.w / 2);
           // 左移
@@ -104,6 +96,26 @@ class Player extends Physical{
     }
   }
 
+  // 主角跳跃
+  playerJump() {
+    if (this.prevDown_jump) return
+    // 父类的跳跃方法
+    this.jump(420).then(hitRes => {
+      // 墙区域
+      if (hitRes!.TYPE === '#') {
+        // 主角在最小状态，并且顶到了墙会使墙上移
+        if (this.level === 0) return (hitRes! as CommonWall).top();
+        // 主角在变大状态，并且顶到墙了会使墙碎裂
+        if (this.level === 1) return (hitRes! as CommonWall).breach();
+      }
+      // 问号区域
+      if (hitRes!.TYPE === '^' || hitRes!.TYPE === '$' || hitRes!.TYPE === '?' || hitRes!.TYPE === '*') {
+        (hitRes! as WallUnknown).appear();
+      }
+    })
+    this.prevDown_jump = true
+  }
+
   // 键盘抬起的操作
   upHandle = (e: KeyboardEvent) => {
     if (e.key === 'w') {
@@ -115,6 +127,26 @@ class Player extends Physical{
       this.prevDown_move = false
       this.endMove()
     }
+  }
+
+  // 变身
+  shapeshift(level: 0 | 1 | 2) {
+    this.isOption = false
+    this.endMove();
+    this.level = level
+    // 一个缓慢增长的效果
+    setTimeout(() => {
+      this.w = this.w + 2;
+      this.h = this.h + 6;
+    }, 400)
+    setTimeout(() => {
+      this.w = this.w + 2;
+      this.h = this.h + 6;
+    }, 600)
+    setTimeout(() => {
+      this.setWH()
+      this.isOption = true;
+    }, 1000)
   }
 
   // 绘制主角
@@ -150,6 +182,11 @@ class Player extends Physical{
         ctx.drawImage(Store.materialImg, cs[4][0], cs[4][1], cs[4][2], cs[4][3], this.x, this.y, this.w, this.h) // 4
       }
     })
+  }
+
+  setWH() {
+    this.w = this.WHALL[this.level === 0 ? 0 : 1][0];
+    this.h = this.WHALL[this.level === 0 ? 0 : 1][1];
   }
 }
 

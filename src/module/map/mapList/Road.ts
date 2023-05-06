@@ -3,7 +3,7 @@ import Map from "../Map";
 import BasicMapBack from "./BasicMapBack";
 
 /**
- *  '墙' 类
+ *  '路' 类
  */
 export default class Road extends BasicMapBack{
   constructor(x: number, y: number) {

@@ -35,5 +35,18 @@ export type Map_enemy = '@'
 export type Map_back = '=' | '#' | Wu_back_type
 // ? 方块的类型
 export type Wu_back_type = '?' | '^' | '*' | '$'
+// 道具的類型
+export type Prop_type = '^_' | '*_' | '$_'
 
 export type Map_Type = string // 完整的地图信息
+
+// 墙碎裂
+export interface WallDestroy {
+  X: number,
+  Y: number,
+  XEnd: number,
+  YEnd: number,
+  loop: number,
+  XSeed: number,
+  A: number
+}
