@@ -4,6 +4,7 @@ import Map from "../Map";
 import {Wu_back_type, Prop_type} from "../map-d";
 import Physical from "../../physical/Physical";
 import Prop from "./Prop";
+import Player from "../../protagonist/Player";
 
 /**
  * '未知方块' 类
@@ -46,6 +47,7 @@ export class WallUnknown extends BasicMapBack {
     })
   }
 
+  // 出现隐藏在方块中的道具
   appear() {
     if (!this.isExist) return;
     super.top()
@@ -55,8 +57,14 @@ export class WallUnknown extends BasicMapBack {
         this.appearGold()
         return;
       }
+      // 变大蘑菇
       case "^": {
         this.appearMushroom_big()
+        return;
+      }
+      // 生命蘑菇
+      case "*": {
+        this.appearMushroom_life()
       }
     }
   }
@@ -110,6 +118,16 @@ export class WallUnknown extends BasicMapBack {
     let p: null | Prop = new Prop(this.x, this.y, <Prop_type>(this.TYPE + '_'))
     p.frameWise(() => {
       p = null
+      Player.shapeshift(-1, 1);
+    })
+  }
+
+  // 出现道具-生命蘑菇
+  appearMushroom_life() {
+    this.isExist = false
+    let p: null | Prop = new Prop(this.x, this.y, <Prop_type>(this.TYPE + '_'))
+    p.frameWise(() => {
+      console.log('吃了生命蘑菇')
     })
   }
 }

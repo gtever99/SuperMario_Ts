@@ -65,9 +65,11 @@ class Map {
 
   // 返回各种地图类
   mapPlant (type: Map_back, x: number, y: number) {
+    // 这几种是道具，返回位置方块类
     if (type === '^' || type === '$' || type === '?' || type === '*') {
       return new WallUnknown(x, y, type)
     }
+    // 根据type返回对应地图
     switch (type) {
       case "=": {
         return new Road(x, y)

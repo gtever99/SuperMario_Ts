@@ -10,8 +10,11 @@ import Player from "../../protagonist/Player";
  *  包含如：蘑菇、花朵之类
  */
 export default class Prop extends Physical {
+  // 几种道具的类型
   TYPE: Prop_type
+  // 计时器ID
   timeId: number
+  // 判断是否到指定值
   count: number
 
   constructor(x: number, y: number, type: Prop_type) {
@@ -37,10 +40,20 @@ export default class Prop extends Physical {
     // 绘制
     Store.basicsDraw(() => {
       ctx.globalCompositeOperation = "destination-over"
-      ctx.drawImage(Store.materialImg, 71, 43, 16, 16, this.x, this.y, this.w, this.h)
+      switch (this.TYPE) {
+        case "^_": {
+          ctx.drawImage(Store.materialImg, 71, 43, 16, 16, this.x, this.y, this.w, this.h)
+          return;
+        }
+        case "*_": {
+          ctx.drawImage(Store.materialImg, 52, 43, 16, 16, this.x, this.y, this.w, this.h)
+          return;
+        }
+      }
     })
   }
 
+  // 逐帧动画
   frameWise = (success?: Function) => {
     const frameWiseHandle = () => {
       this.timeId = requestAnimationFrame(frameWiseHandle);
@@ -48,13 +61,13 @@ export default class Prop extends Physical {
       if (Store.hitDetection(Player, this)) {
         success && success();
         this.destroy()
-        Player.shapeshift(1)
       }
       this.draw()
     }
     frameWiseHandle();
   }
 
+  // 销毁道具
   destroy() {
     super.destroy();
     cancelAnimationFrame(this.timeId)
