@@ -24,10 +24,13 @@ export default class Prop extends Physical {
     this.TYPE = type
     this.w = Map.BASIC_WIDTH;
     this.h = Map.BASIC_HEIGHT
-    setTimeout(() => {
-      this.decline()
-      this.move();
-    }, 700)
+    // ‘道具’ 不为花朵才可以跑
+    if (this.TYPE !== "$_") {
+      setTimeout(() => {
+        this.decline()
+        this.move();
+      }, 700)
+    }
   }
 
   draw() {
@@ -46,6 +49,10 @@ export default class Prop extends Physical {
           return;
         }
         case "*_": {
+          ctx.drawImage(Store.materialImg, 52, 43, 16, 16, this.x, this.y, this.w, this.h)
+          return;
+        }
+        case "$_": {
           ctx.drawImage(Store.materialImg, 52, 43, 16, 16, this.x, this.y, this.w, this.h)
           return;
         }

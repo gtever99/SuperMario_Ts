@@ -51,6 +51,7 @@ export class WallUnknown extends BasicMapBack {
   appear() {
     if (!this.isExist) return;
     super.top()
+    console.log(this.TYPE)
     switch (this.TYPE) {
       // 金币
       case "?": {
@@ -65,6 +66,11 @@ export class WallUnknown extends BasicMapBack {
       // 生命蘑菇
       case "*": {
         this.appearMushroom_life()
+        return;
+      }
+      // 花朵
+      case "$": {
+        this.appearMushroom_flower()
       }
     }
   }
@@ -128,6 +134,15 @@ export class WallUnknown extends BasicMapBack {
     let p: null | Prop = new Prop(this.x, this.y, <Prop_type>(this.TYPE + '_'))
     p.frameWise(() => {
       console.log('吃了生命蘑菇')
+    })
+  }
+
+  // 出现道具-花朵
+  appearMushroom_flower() {
+    this.isExist = false
+    let p: null | Prop = new Prop(this.x, this.y, <Prop_type>(this.TYPE + '_'))
+    p.frameWise(() => {
+      console.log('吃了花朵')
     })
   }
 }
