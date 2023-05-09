@@ -1,12 +1,12 @@
 import Physical from "../../physical/Physical";
-import {Map_back, Prop_type} from "../map-d";
+import {Prop_type} from "../map-d";
 import Store from "../../store/Store";
 import Map from "../Map";
-import BasicMapBack from "./BasicMapBack";
 import Player from "../../protagonist/Player";
+import store from "../../store/Store";
 
 /**
- * 所有道具类
+ * 所有道具类，出现后蘑菇等道具会上升后移动。花朵等道具只会上升
  *  包含如：蘑菇、花朵之类
  */
 export default class Prop extends Physical {
@@ -44,16 +44,28 @@ export default class Prop extends Physical {
     Store.basicsDraw(() => {
       ctx.globalCompositeOperation = "destination-over"
       switch (this.TYPE) {
+        // 道具-红蘑菇
         case "^_": {
           ctx.drawImage(Store.materialImg, 71, 43, 16, 16, this.x, this.y, this.w, this.h)
           return;
         }
+        // 道具-绿蘑菇
         case "*_": {
           ctx.drawImage(Store.materialImg, 52, 43, 16, 16, this.x, this.y, this.w, this.h)
           return;
         }
+        // 道具-花朵
         case "$_": {
-          ctx.drawImage(Store.materialImg, 52, 43, 16, 16, this.x, this.y, this.w, this.h)
+          const key = store.cutImages(3, 300, "prop_$");
+          if (key === 0) {
+            ctx.drawImage(Store.materialImg, 52, 64, 16, 16, this.x, this.y, this.w, this.h)
+          } else if (key === 1) {
+            ctx.drawImage(Store.materialImg, 71, 64, 16, 16, this.x, this.y, this.w, this.h)
+          } else if (key === 2) {
+            ctx.drawImage(Store.materialImg, 90, 64, 16, 16, this.x, this.y, this.w, this.h)
+          } else {
+            ctx.drawImage(Store.materialImg, 109, 64, 16, 16, this.x, this.y, this.w, this.h)
+          }
           return;
         }
       }

@@ -2,7 +2,6 @@ import BasicMapBack from "./BasicMapBack";
 import Store from "../../store/Store";
 import Map from "../Map";
 import {Wu_back_type, Prop_type} from "../map-d";
-import Physical from "../../physical/Physical";
 import Prop from "./Prop";
 import Player from "../../protagonist/Player";
 
@@ -142,7 +141,7 @@ export class WallUnknown extends BasicMapBack {
     this.isExist = false
     let p: null | Prop = new Prop(this.x, this.y, <Prop_type>(this.TYPE + '_'))
     p.frameWise(() => {
-      console.log('吃了花朵')
+      Player.shapeshift(1, -1);
     })
   }
 }

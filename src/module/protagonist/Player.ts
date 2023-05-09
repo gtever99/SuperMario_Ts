@@ -135,6 +135,11 @@ class Player extends Physical{
           }
         }
       });
+    } else if (e.key === 'j') {
+      // 发射子弹
+      console.log("发射");
+      // if (this.level === 1) {
+      // }
     }
   }
 
@@ -237,6 +242,7 @@ class Player extends Physical{
     this.h = this.WHALL[this.playerSize][1];
   }
 
+  // 根据当前的级别和大小获取选择图的坐标位置
   getCCoor() {
     return this.playerCoor.find(v => v.level === this.level && v.playerSize === this.playerSize)!.coorDetail!;
   }

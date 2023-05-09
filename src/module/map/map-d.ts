@@ -26,7 +26,7 @@ export type RenderMapData = Road | BasicMapBack | CommonWall | WallUnknown
 export type Map_enemy = '@'
 /** 背景
  * =：路
- * #：墙
+ * (#：墙
  * ?：金币
  * ^：红蘑菇，变大
  * *：绿蘑菇，加一条生命
