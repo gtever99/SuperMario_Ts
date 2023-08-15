@@ -50,7 +50,6 @@ export class WallUnknown extends BasicMapBack {
   appear() {
     if (!this.isExist) return;
     super.top()
-    console.log(this.TYPE)
     switch (this.TYPE) {
       // 金币
       case "?": {

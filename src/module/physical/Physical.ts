@@ -59,9 +59,13 @@ export default class Physical {
     this.moveSpeed = Math.floor(this.SPEED / 2)
   }
 
-  // 下降
-  decline(fn?: Function) {
+  /**
+   * 下降
+   * @param fn 碰撞到的回调
+   */
+  decline(fn?: (hitRes?: RenderMapData) => void) {
     const declineHandle = () => {
+      this.levitationTimer = requestAnimationFrame(declineHandle)
       let { x, y } = this;
       y += this.jumpSpeed
       // 如果没碰到返回undefined，不然返回 RenderMapData
@@ -80,7 +84,6 @@ export default class Physical {
         this.isLevitation = false
       }
       fn && fn(hitRes)
-      this.levitationTimer = requestAnimationFrame(declineHandle)
     }
     declineHandle()
   }
@@ -100,6 +103,7 @@ export default class Physical {
       // 此事件会一直执行
       const jumpHandle = () => {
         if (!this.isJump) return;
+        this.jumpTimer = requestAnimationFrame(jumpHandle)
         y -= this.jumpSpeed
         const isHit = this.mapHit(this.x, y)
         // 没碰到
@@ -109,8 +113,6 @@ export default class Physical {
           resolve(isHit)
           this.endJump();
         }
-        // 递归执行
-        this.jumpTimer = requestAnimationFrame(jumpHandle)
         // 如果超出规定事件会停止该事件
         if (Date.now() - dateNow > time) {
           this.endJump();
@@ -132,8 +134,9 @@ export default class Physical {
    * 移动
    * @param moveFn 移动回调
    */
-  move = (moveFn?: Function) => {
+  move = (moveFn?: (hitRes?: RenderMapData) => void) => {
     const moveHandle = () => {
+      this.moveTimer = requestAnimationFrame(moveHandle)
       let { x, y } = this;
       // 移动计算
       if (this.dir === 'a') {
@@ -150,7 +153,6 @@ export default class Physical {
       } else {
         if (moveFn) moveFn(hitRes);
       }
-      this.moveTimer = requestAnimationFrame(moveHandle)
     }
     moveHandle()
   }
@@ -178,6 +180,7 @@ export default class Physical {
 
   // 结束移动
   endMove() {
+    console.log(this.moveTimer)
     window.cancelAnimationFrame(this.moveTimer!)
   }
 

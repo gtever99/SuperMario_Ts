@@ -84,19 +84,6 @@ class Store {
       hitObj1.y < hitObj2.y + hitObj2.h;
   }
 
-  // 防抖函数
-  debunce(fn:Function, delay: number): Function {
-    return (...arg: any[]) => {
-      if (this.debunceTimeId) {
-        clearInterval(this.debunceTimeId);
-      }
-      this.debunceTimeId = setTimeout(() => {
-        fn(...arg)
-        this.debunceTimeId = undefined;
-      }, delay)
-    }
-  }
-
   // 获取当前关卡信息
   get getCurrentMapInfo() {
     return mapInfo[this.level]

@@ -9,6 +9,8 @@ import {WallUnknown} from "../map/mapList/WallUnknown";
 import CommonWall from "../map/mapList/CommonWall";
 import {RenderMapData} from "../map/map-d";
 import {CoorDetail, PlayerCoor, PlayerLevel, PlayerSize} from "./player.t";
+import PlayerBullet from "../bullet/PlayerBullet";
+import Controller from "../controller/Controller";
 
 class Player extends Physical{
   // 視口的X位置
@@ -137,7 +139,7 @@ class Player extends Physical{
       });
     } else if (e.key === 'j') {
       // 发射子弹
-      console.log("发射");
+      Controller.bulletArr.push(new PlayerBullet(this.x, this.y))
       // if (this.level === 1) {
       // }
     }
